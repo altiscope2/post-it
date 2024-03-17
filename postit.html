@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vue.js Post-It Memo</title>
+  <title>Notes </title>
+
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
   <style>
     .memo {
       width: 200px;
       height: 200px;
-      background-color: #eebbc3;
+     /*background-color: #eebbc3;*/
       padding: 10px;
       margin: 10px;
       float: left;
@@ -17,15 +19,23 @@
     }
   </style>
 </head>
+<header>
+  
+</header>
 <body>
-  <div id="app">
+  <div id="app" >
     <div>
       <input v-model="newMemo" placeholder="Write here">
       <button @click="addMemo">Post it</button>
     </div>
-    <div class="memo" v-for="(memo, index) in memos" :key="index">
+  
+    <div class="memo" v-for="(memo, index) in memos" :key="index" :style="{ backgroundColor: memo.bgColor }">
       <textarea v-model="memo.content" @input="saveMemos"></textarea>
       <button @click="deleteMemo(index)">Delete</button>
+      <button v-for="color in colors" :key="color" @click="changeColor(color, memo)"> {{ color }} </button>
+    </div>
+    
+      
     </div>
   </div>
 
@@ -34,7 +44,10 @@
       el: '#app',
       data: {
         memos: [],
-        newMemo: ''
+        newMemo: '',
+        bgColor: 'lightblue', //default bg color
+        colors: [ 'lightgreen','pink','lavender','orange'],// list of colors to be called later
+       
       },
       mounted() {
         // Load memos from local storage when the app starts
@@ -46,9 +59,10 @@
       methods: {
         addMemo() {
           if (this.newMemo.trim() !== '') {
-            this.memos.push({ content: this.newMemo });
+            this.memos.push({ content: this.newMemo, bgColor: this.bgColor });
             this.saveMemos();
             this.newMemo = ''; // Clear the input field
+            
           }
         },
         deleteMemo(index) {
@@ -58,6 +72,11 @@
         saveMemos() {
           // Save memos to local storage
           localStorage.setItem('memos', JSON.stringify(this.memos));
+        },
+        changeColor(color, memo){
+          memo.bgColor=color;
+          this.savedMemos();
+        
         }
       }
     });
